@@ -2,103 +2,69 @@
 
 ## Overview
 
-This Flask application demonstrates handling different HTTP methods (GET, POST) for various routes
-with appropriate response codes.
+This document provides a general guide to handling HTTP methods in Flask. The current application (`app.py`) primarily uses the GET method for its routes.
+
+## HTTP Methods in Flask
+
+HTTP methods (or verbs) indicate the desired action to be performed for a given resource. Common methods include GET, POST, PUT, DELETE.
+
+### GET Method
+
+- **Purpose**: Used to request data from a specified resource.
+- **Characteristics**: Idempotent (multiple identical requests have the same effect as a single one) and safe (does not alter the state of the server).
+- **Usage in Flask**: By default, all routes handle GET requests if no `methods` argument is specified in the `@app.route()` decorator.
+  - **Example**:
+
+    ```python
+    @app.route('/')
+    def index():
+        return "This is a GET request."
+    ```
+
+### POST Method
+
+- **Purpose**: Used to submit data to be processed to a specified resource.
+- **Characteristics**: Not idempotent and not safe (can alter the state of the server).
+- **Usage in Flask**: You must explicitly specify `methods=['POST']` in the `@app.route()` decorator.
+  - **Example**:
+
+    ```python
+    from flask import request
+
+    @app.route('/submit', methods=['POST'])
+    def submit_form():
+        data = request.form['item']
+        return f"Submitted: {data}"
+    ```
+
+### Handling Multiple Methods
+
+A single route can handle multiple HTTP methods by listing them in the `methods` argument.
+
+- **Example**:
 
 ```python
-from flask import Flask, request
+from flask import request
 
-app = Flask(__name__)
-
-
-@app.route('/', methods=['GET'])
-def index():
-    return "Hello, World!"
-
-
-@app.route('/about', methods=['POST'])
-def about():
-    return "About Page", 202
-
-
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
-        return "Contact Page - POST Request\n"
-    return "Contact Page\n"
-
-
-if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=5000, debug=True)
+        username = request.form['username']
+        return f"Logged in as {username}"
+    return '''
+        <form method="post">
+            <p><input type=text name=username>
+            <p><input type=submit value=Login>
+        </form>
+    '''
 ```
 
-## Route Details
+### Response Status Codes
 
-### 1. Home Route - GET Only
+Flask allows you to return a custom HTTP status code along with the response.
 
-- **URL**: `http://127.0.0.1:5000/`
-- **Methods**: `GET`
-- **Function**: `index()`
-- **Response**:
-    - HTML: `Hello, World!`
-    - Status: 200 (default)
-- **Test**: `curl http://127.0.0.1:5000/`
+- **Example**: `return "Resource Created", 201`
 
-### 2. About Route - POST Only
+## Current Application HTTP Methods
 
-- **URL**: `http://127.0.0.1:5000/about`
-- **Methods**: `POST`
-- **Function**: `about()`
-- **Response**:
-    - HTML: `About Page`
-    - Status: 202 (Accepted)
-- **Test**: `curl -X POST http://127.0.0.1:5000/about`
-- **Header Check**: `curl -I -X POST http://127.0.0.1:5000/about`
-
-### 3. Contact Route - Multiple Methods
-
-- **URL**: `http://127.0.0.1:5000/contact`
-- **Methods**: `GET, POST`
-- **Function**: `contact()`
-- **Logic**:
-    - **GET Request**: Returns "Contact Page"
-    - **POST Request**: Returns "Contact Page - POST Request"
-- **Tests**:
-    - GET: `curl http://127.0.0.1:5000/contact`
-    - POST: `curl -X POST http://127.0.0.1:5000/contact`
-
-## Key Features
-
-### HTTP Method Specification
-
-- `methods=['GET']` - Restricts route to GET requests only
-- `methods=['POST']` - Restricts route to POST requests only
-- `methods=['GET', 'POST']` - Allows both GET and POST requests
-
-### Response Customization
-
-- **Default Status Code**: 200 OK
-- **Custom Status Code**: 202 Accepted (in about route)
-- **Method Detection**: `request.method` to handle different HTTP methods
-
-## Testing Commands
-
-```bash
-# Test GET request on home route
-curl http://127.0.0.1:5000/
-
-# Test POST request on about route
-curl -X POST http://127.0.0.1:5000/about
-
-# Check headers for POST request
-curl -I -X POST http://127.0.0.1:5000/about
-
-# Test GET and POST on contact route
-curl http://127.0.0.1:5000/contact
-curl -X POST http://127.0.0.1:5000/contact
-```
-
-## Error Handling
-
-- Attempting POST on GET-only routes will return 405 Method Not Allowed
-- Attempting GET on POST-only routes will return 405 Method Not Allowed
+The `app.py` in this project currently uses the `GET` method for its `/` and `/about` routes, which is the default behavior for Flask routes.

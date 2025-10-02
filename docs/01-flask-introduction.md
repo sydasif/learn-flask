@@ -1,20 +1,26 @@
-# Flask Hello World Application
+# Flask Application Overview
 
 ## Overview
 
-A simple Flask web application that displays "Hello, World!" when accessed.
+A simple Flask web application with a homepage displaying a list of numbers and an about page.
 
 ## Code Breakdown
 
 ```python
-from flask import Flask
+from flask import Flask, render_template
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 
 @app.route('/')
 def index():
-    return "Hello, World!"
+    nums = [10, 20, 30, 40, 50]
+    return render_template('index.html', numbers=nums)
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 if __name__ == "__main__":
@@ -23,21 +29,23 @@ if __name__ == "__main__":
 
 ## Components
 
-- **Flask Import**: Imports the Flask class
-- **App Instance**: Creates a Flask application instance
-- **Route Decorator**: `@app.route('/')` maps the root URL to the index function
-- **Index Function**: Returns the "Hello, World!" message
+- **Flask Import**: Imports the Flask class and render_template function.
+- **App Instance**: Creates a Flask application instance, specifying the 'templates' folder.
+- **Home Route**: `@app.route('/')` maps the root URL to the `index` function.
+  - The `index` function creates a list of numbers and renders `index.html`, passing the numbers.
+- **About Route**: `@app.route('/about')` maps the `/about` URL to the `about` function.
+  - The `about` function renders `about.html`.
 - **Main Block**: Runs the application with:
-    - Host: `127.0.0.1` (localhost)
-    - Port: `5000`
-    - Debug: `True` (enables auto-reload and debug mode)
+  - Host: `127.0.0.1` (localhost)
+  - Port: `5000`
+  - Debug: `True` (enables auto-reload and debug mode)
 
 ## Usage
 
-1. Save the code in a file (e.g., `app.py`)
-2. Run with: `python app.py`
-3. Visit `http://127.0.0.1:5000` in your browser
-4. You should see "Hello, World!" displayed
+1. Save the code in `app.py`.
+2. Ensure `index.html`, `about.html`, and `base.html` are in the `templates` directory.
+3. Run with: `python app.py`
+4. Visit `http://127.0.0.1:5000` for the homepage and `http://127.0.0.1:5000/about` for the about page in your browser.
 
 ## Requirements
 
